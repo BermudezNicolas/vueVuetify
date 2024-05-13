@@ -1,0 +1,30 @@
+{
+  "name": "vuevuetify",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "vite preview",
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "firebase": "^10.11.1",
+    "nanoid": "^5.0.7",
+    "pinia": "^2.1.7",
+    "roboto-fontface": "*",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0",
+    "vuetify": "^3.5.17",
+    "webfontloader": "^1.0.0"
+  },
+  "devDependencies": {
+    "@mdi/font": "^7.4.47",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "vite": "^5.2.8",
+    "vite-plugin-vue-devtools": "^7.0.25",
+    "vite-plugin-vuetify": "^1.0.0-alpha.12",
+    "vue-cli-plugin-vuetify": "~2.5.8"
+  },
+  "type": "module"
+}
