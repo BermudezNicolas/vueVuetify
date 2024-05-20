@@ -55,6 +55,18 @@
         </v-btn>
       </router-link>
 
+      <router-link to="/profile">
+        <v-btn
+          v-if="userStore.userData"
+          color="black"
+          prepend-icon="mdi-account"
+          variant="plain"
+          height="80" 
+        >
+          Profile
+        </v-btn>
+      </router-link>
+
      
     </v-app-bar>
   </div>

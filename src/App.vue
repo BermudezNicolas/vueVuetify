@@ -7,9 +7,8 @@
           variant="tonal"
           color="primary"
         >
-          <p class="text-center"> Welcome back  {{ userStore.userData.mail }}!!</p>
+          <p class="text-center"> Welcome back  {{ userStore.userData.email }}!!</p>
         </v-snackbar>
-        {{ userStore.userData?.uid }}
         <RouterView></RouterView>
       </v-main>
    </v-app>
@@ -25,18 +24,20 @@ import { onMounted} from "vue";
 
 const userStore = useUserStore();
 let auth;
-onMounted( () => {
+onMounted(() => {
   auth = getAuth();
-  onAuthStateChanged(auth,  (user) => {
-    if (user) {
-      console.log(user)
-      userStore.userData = user;
-    } else {
-      console.log('no')
-      const databaseStore = useDatabaseStore();
-      databaseStore.$reset();
-    }
-  });
-});
+  onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log(user);
+        userStore.userData = user;
+      } else {
+        console.log('no');
+        userStore.userData = null; // Restablecer los datos del usuario
+        const databaseStore = useDatabaseStore();
+        databaseStore.$reset();
+      }
+    });
+  }
+);
 
 </script>

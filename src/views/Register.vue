@@ -20,6 +20,7 @@
                 density="compact"
                 variant="outlined"
                 prepend-inner-icon="mdi-email-outline"
+                class="mb-1"
               ></v-text-field>
   
               <div
@@ -36,7 +37,7 @@
                 prepend-inner-icon="mdi-lock-outline"
                 variant="outlined"
                 @click:append-inner="visible = !visible"
-                class="mb-5"
+                class="mb-1"
                 :rules="passwordRules"
               ></v-text-field>
 
@@ -54,7 +55,7 @@
               prepend-inner-icon="mdi-lock-outline"
               variant="outlined"
               @click:append-inner="visible = !visible"
-              class="mb-5"
+              class="mb-3"
               :rules="password2Rules"
             ></v-text-field>
   
@@ -66,12 +67,11 @@
                 color="blue"
                 :loading="loading"
                 type="submit"
-                class="mb-8"
                   >Sing up</v-btn
                 >
               </div>
               <p class="text-subtitle-1 text-medium-emphasis text-center">or</p>
-              <v-card class="text-center mt-2" elevation="0">
+              <v-card class="text-center" elevation="0">
                 <router-link
                   to="/login"
                   class="text-decoration-none text-blue text-center"

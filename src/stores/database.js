@@ -61,26 +61,30 @@ export const useDatabaseStore = defineStore('databaseStore', {
         },
 
         async readUrl(docId){
-            try {
-             this.loadingDocs = true
-             const docRef = doc(db,"urls", docId);
-             const docSnap = await getDoc(docRef);
-             if(!docSnap.exists()){
-               throw new Error("no existe ese documento")
-             }
-             if(docSnap.data().user !== auth.currentUser.uid){
-               throw new Error("ese documento no le pertenece")
-             }
-             console.log(docSnap.data().name)
-             return docSnap.data().name
-            } catch (error) {
-              console.log(Error.message)
-            }
-            finally{
-             this.loadingDocs = false
-            }
+          try {
+              this.loadingDocs = true;
+              const docRef = doc(db, "urls", docId);
+              const docSnap = await getDoc(docRef);
+              
+              if (!docSnap.exists()) {
+                  throw new Error("No existe ese documento");
+              }
+              
+              if (docSnap.data().user !== auth.currentUser.uid) {
+                  throw new Error("Ese documento no le pertenece");
+              }
+              
+              const url = docSnap.data().name;
+      
+              console.log(url);
+              return url;
+          } catch (error) {
+              console.error(error.message);
+          } finally {
+              this.loadingDocs = false;
+          }
         },
- 
+        
         async updateUrl(docId, name){
            try {
              this.addingOrDeleteDoc = true           

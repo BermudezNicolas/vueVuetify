@@ -1,8 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
+
 import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
-import Edit from "../views/Edit.vue"
+import Edit from "../views/Edit.vue";
+import Profile from "../views/Profile.vue";
+
 import { useUserStore } from "@/stores/user";
 import { onAuthStateChanged, getAuth} from "firebase/auth";
 
@@ -13,12 +16,21 @@ const routes = [
     component: Home, // Utiliza el componente Home importado
     meta: {requiresAuth:true}
   },
+
   {
-    path:'/edit',
+    path: '/profile',
+    name: 'profile',
+    component: Profile,
+    meta: {requiresAuth: true},
+  },
+
+  {
+    path: '/edit/:id',
     name: 'edit',
     component: Edit,
-    meta:{requiresAuth: true}
+    meta: {requiresAuth: true}
   },
+
   {
     path: '/login',
     name: 'login',
