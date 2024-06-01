@@ -1,22 +1,22 @@
 <template>
   <v-main>
    <AddForm></AddForm>
-   <v-container class=" border-xl mb-8 elevation-3 border-info border-double">
+   <v-container class=" border-xl elevation-3 border-info border-double pa-2 fluid mb-5" style="width: 100%;">
        <p class="text-h2 font-weight-medium text-center mb-3">Urls</p>
        <v-divider :thickness="3" color="info" class="mb-2" ></v-divider>
        <v-row no-gutters justify="center">
-           <v-col cols="6"   v-for="doc of databaseStore.documents" :key="doc.id">
-               <v-card class="ma-3 pa-2" elevation="8" border rounded>           
+           <v-col cols="12"  v-for="doc of databaseStore.documents" :key="doc.id">
+               <v-card  class="pa-3 mb-2" color="#E8EAF6" elevation="8" border rounded>           
                     <p class="font-weight-bold text-high-emphasis text-h5">Id: {{ doc.id }}</p>
-                    <br>
+                    <v-divider class="my-2"/>
                     <p class="font-weight-bold text-high-emphasis text-h5">Url: {{ doc.name }}</p>
-                    <br>
-                    <p class="font-weight-bold text-high-emphasis text-h5">Short: {{ doc.short }}</p>
-                    <div class="text-center">
-                        <v-btn  elevation="4" color="primary" density="compact"  class="rounded-lg mb-2" block  @click="router.push(`/edit/${doc.id}`)">
-                          Edit                                            
-                        </v-btn>
-                        <v-btn elevation="3" color="error" class="rounded-lg" density="compact" @click="databaseStore.deleteUrl(doc.id)">Delete</v-btn> 
+                    <v-divider class="my-2"/>
+                    <p class="font-weight-bold text-high-emphasis text-h5 mb-3">Short: {{ doc.short }}</p>
+                    <div class="d-flex justify-end align-center">
+                        <v-btn elevation="3" color="error" class="rounded-lg mr-2" variant="outlined" density="compact" @click="databaseStore.deleteUrl(doc.id)">Delete</v-btn> 
+                        <v-btn  elevation="3" color="#0091EA" density="compact"  class="rounded-lg"   @click="router.push(`/edit/${doc.id}`)">
+                            Edit                                            
+                          </v-btn>
                     </div>
                 </v-card>
            </v-col>
@@ -32,9 +32,6 @@
 import AddForm from '../components/AddForm.vue';
 import { useUserStore } from '@/stores/user';
 import { useDatabaseStore } from '@/stores/database';
-
-import {ref} from 'vue';
-import { shallowRef } from 'vue'
 import { useRouter } from 'vue-router';
 
 
@@ -62,3 +59,5 @@ databaseStore.getUrls()
 
 
 </script>
+
+

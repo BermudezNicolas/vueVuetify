@@ -123,7 +123,7 @@ async function submit (event) {
           console.log(
             "Something unexpected happened, please try again later..."
           );
-          mail.value =  "";      // reseteo el form si hay un error
+         // reseteo el form si hay un error
           password.value =  "";
           break;
       }
@@ -151,9 +151,6 @@ async function checkPassword(value) {
         timeout = setTimeout(() => {
           if (!value) 
             return resolve("Please enter a password.");
-          if (value.length < 6)
-            return resolve("Password must be at least 6 characters");
-
           return resolve(true);
         },1);
       });

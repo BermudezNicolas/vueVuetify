@@ -1,171 +1,134 @@
 <template>
-    <div>
-      <v-img
-        class="mx-auto my-8"
-        max-width="228"
-        src="https://cdn.vuetifyjs.com/docs/images/logos/vuetify-logo-v3-slim-text-light.svg"
-      ></v-img>
-      <v-card
-        class="mx-auto pa-12 pb-8 mb-12"
-        elevation="8"
-        max-width="448"
-        rounded="lg"
+  <div>
+    <v-img
+      class="mx-auto my-8"
+      max-width="228"
+      src="https://cdn.vuetifyjs.com/docs/images/logos/vuetify-logo-v3-slim-text-light.svg"
+    ></v-img>
+    <v-card
+      class="mx-auto pa-12 pb-8 mb-9"
+      elevation="8"
+      max-width="500"
+      rounded="lg"
+    >
+    <v-form @submit.prevent="submit" ref="loginForm">
+      <v-text-field
+        v-model="userOrEmail"
+        :rules="nameRules"
+        label="User name or email"
+        hint="Username will be 3 to 10 characters"
       >
-       <v-form validate-on="submit lazy" @submit.prevent="submit">
-              <div class="text-subtitle-1 text-medium-emphasis">E-mail</div>
-              <v-text-field
-                v-model="mail"
-                placeholder="Email Adress"
-                :rules="mailRules"
-                density="compact"
-                variant="outlined"
-                prepend-inner-icon="mdi-email-outline"
-                class="mb-1"
-              ></v-text-field>
-  
-              <div
-                class="text-subtitle-1 text-medium-emphasis"
-              >
-                Password
-              </div>
-              <v-text-field
-                v-model="password"
-                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-                :type="visible ? 'text' : 'password'"
-                density="compact"
-                placeholder="Enter your password"
-                prepend-inner-icon="mdi-lock-outline"
-                variant="outlined"
-                @click:append-inner="visible = !visible"
-                class="mb-1"
-                :rules="passwordRules"
-              ></v-text-field>
+      </v-text-field>
+      <v-text-field
+        v-model="password"
+        :append-inner-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append-inner="showPass = !showPass"
+        :type="showPass ? 'text' : 'password'"
+        hint="password will be at least 6 characters"
+        :rules="pwRules"
+        label="Password"
+      >
+      </v-text-field>
 
-              <div
-              class="text-subtitle-1 text-medium-emphasis"
-            >
-              Repeat Password
-            </div>
-            <v-text-field
-              v-model="password2"
-              :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-              :type="visible ? 'text' : 'password'"
-              density="compact"
-              placeholder="Enter your password"
-              prepend-inner-icon="mdi-lock-outline"
-              variant="outlined"
-              @click:append-inner="visible = !visible"
-              class="mb-3"
-              :rules="password2Rules"
-            ></v-text-field>
-  
-              <div class="text-center">
-                <v-btn 
-                density="compact" 
-                size="large" 
-                variant="tonal" 
-                color="blue"
-                :loading="loading"
-                type="submit"
-                  >Sing up</v-btn
-                >
-              </div>
-              <p class="text-subtitle-1 text-medium-emphasis text-center">or</p>
-              <v-card class="text-center" elevation="0">
-                <router-link
-                  to="/login"
-                  class="text-decoration-none text-blue text-center"
-                  >Log in</router-link
-                >
-              </v-card>
-      
+      <v-text-field
+        v-model="rPassword"
+        :append-inner-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append-inner="showPass = !showPass"
+        :type="showPass ? 'text' : 'password'"
+        hint="password will be at least 6 characters"
+        :rules="rpwRules"
+        label="Repeat Password"
+      >
+      </v-text-field>
+      <v-btn
+        color="blue"
+        type="submit"
+        block
+        class="mt-2"
+        :loading="loading"
+      >
+        Sign up
+      </v-btn>
+        <p class="text-subtitle-1 text-medium-emphasis text-center">or</p>
+        <v-card class="text-center mt-2" elevation="0">
+          <router-link
+            to="/login"
+            class="text-decoration-none text-blue text-center"
+            >Log in</router-link
+          >
+        </v-card>
+      </v-form>
+    </v-card>
+  </div>
+</template>
+
+<script setup>
+  import { ref } from 'vue'
+  import { useUserStore } from '@/stores/user';
+  const loginDialog = ref(true)
+
+  const userOrEmail = ref('')
+  const password = ref('')
+  const rPassword = ref('')
+  const showPass = ref(false)
+  const loginForm = ref(null)
+  const lastErrors = ref({})
+  const loading = ref(false)
+
+  const nameRules = [(value) => !!value || 'Required.',
+                     (value) => (/^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/.test(value)) || 'e-mail must be valid'
+  ]
+  const pwRules = [(value) => !!value || 'Required.',
+                   (value) => (value.length >= 6)|| 'password must be al least 6']
+
+  const rpwRules =  [(value) => !!value || 'Required.',
+                     (value) => (value === password.value)|| 'passwords do not match']
+
+  const submit = async () => {
+    loading.value = true
+    const {valid, errors} = await loginForm.value.validate()
+    if(valid) {
+        const userStore = await useUserStore();
+        const error = await userStore.registerUser(userOrEmail.value, password.value); // se usa para manejar los errores de autenticacion del user
+            if (!error) {
+                  return; // no hace nada, en este caso no hubo problema con el metodo login, por lo que termina la funcion aca
+                }
+
+                switch (
+                  error // contempla los distintos errores que tira firebase por parte de la auth, dependendiendo el error voy a notificar a la UI del mismo
+                ) {
+                  case "auth/invalid-credential":
+                    console.log("Invalid Credentials");
+                    // reseteo el form si hay un error
+                    password.value =  "";
+                    break;
+                  case "auth/invalid-email":
+                    console.log("Invalid Email");
+                    break; 
+                  case "auth/weak-password":
+                    repeatPassword.value =  "";
+                    console.log("Invalid password");
+                    break
+                  case "auth/missing-password":
+                    console.log("auth/missing-password");
+                    break;
+                  case "auth/missing-email":
+                    console.log("missing-email");
+                    break;   
+                  default:
+                    console.log(
+                      "Something unexpected happened, please try again later..."
+                    );
+                  // reseteo el form si hay un error
+                    password.value =  "";
+                    break;
+                }
               
-         </v-form>
-      </v-card>
-    </div>
-  </template>
-  
-  <script>
-    import { useUserStore } from "@/stores/user";
-    export default {
-      data: (vm) => ({
-        loading: false,
-        mail: "",
-        password2:"",
-        password: "",
-        timeout: null,
-        mailRules: [(mail) => vm.checkMail(mail)],
-        passwordRules: [(password) => vm.checkPassword(password)],
-        password2Rules: [(password2,password) => vm.checkPassword2(password2, vm.password)],        
-        visible: false,
-      }),
-    
-      methods: {
-        async submit(event) {
-          this.loading = true;
-          const userStore = await useUserStore();
-          const error = await userStore.registerUser(this.mail, this.password); // se usa para manejar los errores de autenticacion del user
-          if (!error) {
-            userStore.logInSuccess = true;
-            return; // no hace nada, en este caso no hubo problema con el metodo login, por lo que termina la funcion aca
-          }
+    }
+    loading.value = false
+  }
 
-          switch (
-            error // contempla los distintos errores que tira firebase por parte de la auth, dependendiendo el error voy a notificar a la UI del mismo
-          ) {
-            case "auth/invalid-credential":
-              console.log("Invalid Credentials");
-              // reseteo el form si hay un error
-              this.password =  "";
-              break;
-            case "auth/invalid-email":
-              console.log("Invalid Email");
-              this.mail =  ""; 
-              break;  
-            default:
-              console.log(
-                "Something unexpected happened, please try again later..."
-              );
-              this.mail =  "";      // reseteo el form si hay un error
-              this.password =  "";
-              break;
-          }
-          this.loading = false;
-        },
-
-            
-    
-        async checkMail(value) {
-          return new Promise((resolve) => {
-            clearTimeout(this.timeout);
-    
-            this.timeout = setTimeout(() => {
-              if (!value) return resolve("Please enter an email.");
-              if (!/^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/.test(value))
-                return resolve("This is not a valid email. Please try again");
-    
-              return resolve(true);
-            }, 1000);
-          });
-        },
-        async checkPassword(value) {
-          return new Promise((resolve) => {
-            if (!value) return resolve("Please enter a password.");
-            if (value.length < 6) return resolve("Password must be at least 6 characters");
-    
-            return resolve(true);
-          });
-        },
-        async checkPassword2(value2, value) {
-            return new Promise((resolve) => {
-              if (!value2) return resolve("Confirm password.");
-              if (!value) return resolve(true)
-              if (value2 !== value) return resolve("Passwords don't match.");
-              return resolve(true); 
-            });
-        },
-      },
-    };
-    </script>
-    
   
+</script>
+
+

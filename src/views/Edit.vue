@@ -62,12 +62,34 @@ onMounted(async () => {
 });
 
 async function submit(event) {
-  try {
-    if (validUrl) await databaseStore.updateUrl(route.params.id, url.value);
-  } catch (error) {
-    console.log("url invalido");
-  }
-}
+  const validationResult = await checkApi(url.value);
+  if (validationResult === true) {
+   
+        const error = await databaseStore.updateUrl(route.params.id, url.value);
+        if(!error){
+            return
+        }
+        switch (
+            error // contempla los distintos errores que tira firebase por parte de la auth, dependendiendo el error voy a notificar a la UI del mismo
+          ) {
+            case "auth/invalid-credential":
+              console.log("Invalid Credentials");
+              // reseteo el form si hay un error
+              break;
+            case "auth/invalid-email":
+              console.log("Invalid Email");
+              break;  
+            case "auth/missing-password":
+              console.log("auth/missing-password");
+              break;
+            default:
+              console.log(
+                "Something unexpected happened, please try again later..."
+              );
+              break;
+          }
+        }
+};
 
 async function checkApi(url) {
   return new Promise((resolve) => {
@@ -77,7 +99,6 @@ async function checkApi(url) {
     if (!/^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/.test(url)) {
       return resolve("Invalid url.");
     }
-    validUrl = true;
     return resolve(true);
   });
 }
