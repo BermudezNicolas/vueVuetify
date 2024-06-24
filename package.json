@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@firebase/storage": "^0.12.5",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
     "firebase": "^10.11.1",
@@ -17,7 +18,9 @@
     "roboto-fontface": "*",
     "vee-validate": "^4.12.8",
     "vue": "^3.4.21",
+    "vue-marquee-slider": "^1.0.6",
     "vue-router": "^4.3.0",
+    "vue3-marquee": "^4.2.0",
     "vuetify": "^3.5.17",
     "webfontloader": "^1.0.0"
   },

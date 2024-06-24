@@ -14,6 +14,10 @@ import * as directives from 'vuetify/directives'
 import colors from 'vuetify/util/colors'
 
 
+// vue-marquee
+import Vue3Marquee from 'vue3-marquee'
+
+
 const vuetify = createVuetify({
   components,
   directives,
@@ -26,4 +30,5 @@ createApp(App)
   .use(router)
   .use(createPinia())
   .use(vuetify)
+  .use(Vue3Marquee)
   .mount('#app')

@@ -1,22 +1,24 @@
 <template>
   <div>
-    <v-img
-      class="mx-auto my-8"
-      max-width="228"
-      src="https://cdn.vuetifyjs.com/docs/images/logos/vuetify-logo-v3-slim-text-light.svg"
-    ></v-img>
     <v-card
-      class="mx-auto pa-12 pb-8 mb-9"
+      class="mx-auto  pa-12 pb-8 mb-9"
       elevation="8"
       max-width="500"
       rounded="lg"
     >
-    <v-form @submit.prevent="submit" ref="loginForm">
+      <v-img
+          class="mx-auto my-8"
+          max-width="228"
+          src="https://cdn.vuetifyjs.com/docs/images/logos/vuetify-logo-v3-slim-text-light.svg"
+      ></v-img>
+     <v-form @submit.prevent="submit" ref="loginForm">
+      
       <v-text-field
         v-model="userOrEmail"
         :rules="nameRules"
-        label="User name or email"
-        hint="Username will be 3 to 10 characters"
+        label="E-mail"
+        variant="outlined"
+        density="compact"
       >
       </v-text-field>
       <v-text-field
@@ -27,6 +29,8 @@
         hint="password will be at least 6 characters"
         :rules="pwRules"
         label="Password"
+        variant="outlined"
+        density="compact"
       >
       </v-text-field>
 
@@ -38,17 +42,26 @@
         hint="password will be at least 6 characters"
         :rules="rpwRules"
         label="Repeat Password"
+        class="mb-2"
+        variant="outlined"
+        density="compact"
       >
       </v-text-field>
-      <v-btn
+      <div class="text-center">
+
+        <v-btn
+        density="compact"
+        size="large"
+        variant="tonal"
         color="blue"
-        type="submit"
-        block
-        class="mt-2"
         :loading="loading"
+        type="submit"
+        class="mb-3 text-center"
       >
         Sign up
       </v-btn>
+      </div>
+    
         <p class="text-subtitle-1 text-medium-emphasis text-center">or</p>
         <v-card class="text-center mt-2" elevation="0">
           <router-link
@@ -65,7 +78,6 @@
 <script setup>
   import { ref } from 'vue'
   import { useUserStore } from '@/stores/user';
-  const loginDialog = ref(true)
 
   const userOrEmail = ref('')
   const password = ref('')
@@ -130,5 +142,10 @@
 
   
 </script>
+
+
+
+<style>
+</style>
 
 

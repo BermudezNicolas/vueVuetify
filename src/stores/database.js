@@ -4,6 +4,7 @@ import router from "../router/router"
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore/lite";
 import { db } from "../firebase/firebaseConfig";
 import { nanoid } from "nanoid";
+import { useUserStore } from "./user";
 
 
 
@@ -17,7 +18,23 @@ export const useDatabaseStore = defineStore('databaseStore', {
    
    
    actions: {
-        
+        async uploadPhotoAndUpdateUser(photoUrl) {
+          try {
+
+            // Actualizar el campo photoUrl del documento de usuario en Firestore
+            const userDocRef = doc(db, 'users', auth.currentUser.uid);
+            await updateDoc(userDocRef, {
+              photoUrl: photoUrl
+            });
+            const userSotore = useUserStore()
+            // Actualizar el store local con la nueva URL de la foto
+            userSotore.userData.photoUrl = photoUrl;
+
+          } catch (error) {
+            console.error(error);
+          }
+        },
+
         async getUrls () {
             try {
                 if(this.documents.length !== 0){

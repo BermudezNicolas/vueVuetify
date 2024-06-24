@@ -1,0 +1,46 @@
+.gradient-bg-animation {
+    height: 100vh; /* Tamaño completo de la ventana visible */
+    background-image: linear-gradient(to right, #eea2a2 0%, #bbc1bf 19%, #57c6e1 42%, #b49fda 79%, #7ac5d8 100%);
+    background-size: 300% 100%; /* Ancho del 300% para el fondo */
+    animation: gradient 15s ease infinite; /* Nombre de la animación, duración, tipo de aceleración y repetición infinita */
+ }
+  
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  
+/* Se le saca el efecto de hover por defecto de vuetify a los botones, o items que los tengan*/
+  .item{
+    background: transparent;
+    opacity: 1;  
+ }
+
+  .item:hover .v-btn__overlay {
+    background: transparent;
+    opacity: 100;
+
+  }
+   
+  .listItem{
+    background: transparent;
+    
+  }
+
+  .listItem:hover .v-list-item__overlay{
+    background: transparent;
+  }
+
+
+
+  .item2 .v-btn__overlay  .v-btn__unverlay{
+     opacity: 1;
+  }

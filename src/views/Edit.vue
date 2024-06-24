@@ -1,55 +1,58 @@
 <template>
-  <v-overlay v-model="overlay" persistent class="align-center justify-center">
-    <v-card
-      elevation="8"
-      style="width: 600px; height: 300px; border-radius: 23px"
+  <div>
+    <v-overlay
+      v-model="overlay"
+      persistent
+      class=" align-center justify-center"
+      style="padding-right:20px; padding-left:20px"
+   
     >
-      <v-form validate-on="submit lazy" @submit.prevent>
-        <div class="text-h3 text-center my-2">Edit url</div>
-        <v-divider :thickness="1" class="border-opacity-25 my-4"></v-divider>
-        <div class="mx-2 text-subtitle-1 text-medium-emphasis">Url</div>
-        <v-text-field
-          v-model="url"
-          :rules="rules"
-          variant="outlined"
-          prepend-inner-icon="mdi-pencil"
-          class="mx-2 mb-2"
-          clearable
-        ></v-text-field>
-        <div class="d-flex justify-center">
-          <v-btn
-            variant="tonal"
-            color="error"
-            density="compact"
-            class="ma-2"
-            @click="router.push('/')"
-            >Cancel</v-btn
-          >
-          <v-btn
-            type="submit"
-            variant="tonal"
-            color="info"
-            density="compact"
-            class="ma-2"
-            @click="submit"
-            >Edit</v-btn
-          >
-        </div>
-      </v-form>
-    </v-card>
-  </v-overlay>
+      <v-card elevation="8" style="width:400px">
+        <v-form validate-on="submit lazy" @submit.prevent>
+          <div class="text-h3 text-center my-2">Edit url</div>
+          <v-divider :thickness="1" class="border-opacity-25 my-4"></v-divider>
+          <div class="mx-2 text-subtitle-1 text-medium-emphasis">Url</div>
+          <v-text-field
+            v-model="url"
+            :rules="rules"
+            variant="outlined"
+            prepend-inner-icon="mdi-pencil"
+            class="mx-2 mb-2"
+            clearable
+          ></v-text-field>
+          <div class="d-flex justify-center">
+            <v-btn
+              variant="outlined"
+              color="error"
+              density="compact"
+              class="ma-2"
+              @click="cancel()"
+              >Cancel</v-btn
+            >
+            <v-btn
+              type="submit"
+              variant="flat"
+              color="info"
+              density="compact"
+              class="ma-2 opacity-100"
+              @click="submit"
+              >Edit</v-btn
+            >
+          </div>
+        </v-form>
+      </v-card>
+    </v-overlay>
+  </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useDatabaseStore } from "@/stores/database";
 import { useRoute } from "vue-router";
 import { updateDoc } from "firebase/firestore/lite";
 import router from "@/router/router";
 
 const url = ref("");
-let validUrl = false;
 const rules = [(value) => checkApi(value)];
 const overlay = ref(true);
 
@@ -64,32 +67,34 @@ onMounted(async () => {
 async function submit(event) {
   const validationResult = await checkApi(url.value);
   if (validationResult === true) {
-   
-        const error = await databaseStore.updateUrl(route.params.id, url.value);
-        if(!error){
-            return
-        }
-        switch (
-            error // contempla los distintos errores que tira firebase por parte de la auth, dependendiendo el error voy a notificar a la UI del mismo
-          ) {
-            case "auth/invalid-credential":
-              console.log("Invalid Credentials");
-              // reseteo el form si hay un error
-              break;
-            case "auth/invalid-email":
-              console.log("Invalid Email");
-              break;  
-            case "auth/missing-password":
-              console.log("auth/missing-password");
-              break;
-            default:
-              console.log(
-                "Something unexpected happened, please try again later..."
-              );
-              break;
-          }
-        }
-};
+    const error = await databaseStore.updateUrl(route.params.id, url.value);
+    if (!error) {
+      return;
+    }
+    switch (
+      error // contempla los distintos errores que tira firebase por parte de la auth, dependendiendo el error voy a notificar a la UI del mismo
+    ) {
+      case "auth/invalid-credential":
+        console.log("Invalid Credentials");
+        // reseteo el form si hay un error
+        break;
+      case "auth/invalid-email":
+        console.log("Invalid Email");
+        break;
+      case "auth/missing-password":
+        console.log("auth/missing-password");
+        break;
+      default:
+        console.log("Something unexpected happened, please try again later...");
+        break;
+    }
+  }
+}
+
+function cancel() {
+  overlay.value = false;
+  router.push("/");
+}
 
 async function checkApi(url) {
   return new Promise((resolve) => {

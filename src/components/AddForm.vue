@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="ma-4">
+  <v-sheet class="ma-4"  style="background-color:rgb(42, 41, 41)">
     <v-form validate-on="submit lazy" @submit.prevent="submit">
       <v-text-field
         prepend-inner-icon="$treeviewExpand"
@@ -8,14 +8,20 @@
         label="Enter an URL:"
         v-model="url"
         :rules="urlRules"
+        theme="dark"
+        
       ></v-text-field>
       <div class="text-center">
         <v-btn
           :loading="loading"
+          border="opacity-100 sm primary"
           class="mt-2"
           text="Add"
           type="submit"
           width="50%"
+          variant="text"
+          theme="dark"
+          color="white"
         ></v-btn>
       </div>
     </v-form>
@@ -24,6 +30,7 @@
 
 <script>
 import { useDatabaseStore } from '@/stores/database';
+
 export default {
   data: () => ({
     loading: false,

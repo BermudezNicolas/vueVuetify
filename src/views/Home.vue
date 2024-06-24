@@ -1,63 +1,100 @@
 <template>
-  <v-main>
-   <AddForm></AddForm>
-   <v-container class=" border-xl elevation-3 border-info border-double pa-2 fluid mb-5" style="width: 100%;">
-       <p class="text-h2 font-weight-medium text-center mb-3">Urls</p>
-       <v-divider :thickness="3" color="info" class="mb-2" ></v-divider>
-       <v-row no-gutters justify="center">
-           <v-col cols="12"  v-for="doc of databaseStore.documents" :key="doc.id">
-               <v-card  class="pa-3 mb-2" color="#E8EAF6" elevation="8" border rounded>           
-                    <p class="font-weight-bold text-high-emphasis text-h5">Id: {{ doc.id }}</p>
-                    <v-divider class="my-2"/>
-                    <p class="font-weight-bold text-high-emphasis text-h5">Url: {{ doc.name }}</p>
-                    <v-divider class="my-2"/>
-                    <p class="font-weight-bold text-high-emphasis text-h5 mb-3">Short: {{ doc.short }}</p>
-                    <div class="d-flex justify-end align-center">
-                        <v-btn elevation="3" color="error" class="rounded-lg mr-2" variant="outlined" density="compact" @click="databaseStore.deleteUrl(doc.id)">Delete</v-btn> 
-                        <v-btn  elevation="3" color="#0091EA" density="compact"  class="rounded-lg"   @click="router.push(`/edit/${doc.id}`)">
-                            Edit                                            
-                          </v-btn>
-                    </div>
-                </v-card>
-           </v-col>
-       </v-row>
-   </v-container>
-
-  </v-main>
-
- 
+  <div>
+    <AddForm></AddForm>
+    <div class="mx-auto mb-3" style="width: 70%;">
+        <v-expansion-panels
+        variant="popout"
+        v-for="doc of databaseStore.documents"
+        :key="doc.id"
+        class="w-7"
+      >
+        <v-expansion-panel
+          class="border-t-sm border-white border-opacity-100"
+          elevation="8"
+          bg-color="indigo-lighten-2"
+        >
+          <v-expansion-panel-title expand-icon="mdi-menu-down">
+            <v-col cols="auto">
+              <p class="url-text">{{ doc.name }}</p>
+            </v-col>
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <v-row justify="space-between" align="center">
+              <v-col cols="auto">
+                <p class="text-white text-h5 text-start">Id</p>
+              </v-col>
+              <v-col cols="1">
+                <v-divider class="border-opacity-100"></v-divider>
+              </v-col>
+              <v-col>
+                {{ doc.id }}
+              </v-col>
+            </v-row>
+            <v-row justify="space-between" align="center">
+              <v-col cols="auto">
+                <p class="text-white text-h5 text-start">Short</p>
+              </v-col>
+              <v-col cols="1">
+                <v-divider class="border-opacity-100"></v-divider>
+              </v-col>
+              <v-col>
+                {{ doc.short }}
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="d-flex justify-end">
+                <v-btn
+                  color="error"
+                  variant="outlined"
+                  border="opacity-border-100"
+                  density="compact"
+                  class="mr-2"
+                  @click="databaseStore.deleteUrl(doc.id)"
+                  >Delete</v-btn
+                >
+                <v-btn
+                  color="primary"
+                  variant="flat"
+                  density="compact"
+                  @click="router.push(`/edit/${doc.id}`)"
+                  >Edit</v-btn
+                >
+              </v-col>
+            </v-row>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import AddForm from '../components/AddForm.vue';
-import { useUserStore } from '@/stores/user';
-import { useDatabaseStore } from '@/stores/database';
-import { useRouter } from 'vue-router';
-
+import AddForm from "../components/AddForm.vue";
+import { useUserStore } from "@/stores/user";
+import { useDatabaseStore } from "@/stores/database";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 
 const handleUpdate = async (docId, newUrl) => {
-    try{
-        console.log(docId,newUrl)
-        await databaseStore.updateUrl(docid, newUrl);
-        overlay.value = false; // Oculta la tarjeta de edición después de hacer clic en "Edit"
-    } catch (error) {
-        console.log(error.message);
-    }
+  try {
+    console.log(docId, newUrl);
+    await databaseStore.updateUrl(docid, newUrl);
+    overlay.value = false; // Oculta la tarjeta de edición después de hacer clic en "Edit"
+  } catch (error) {
+    console.log(error.message);
+  }
 };
-
 
 const userStore = useUserStore();
 const databaseStore = useDatabaseStore();
 
-
-
-
-
-databaseStore.getUrls()
-
-
+databaseStore.getUrls();
 </script>
 
-
+<style>
+.url-text {
+  white-space: pre-wrap; /* Permite saltos de línea */
+  word-break: break-all; /* Romper palabras para evitar truncamiento */
+}
+</style>

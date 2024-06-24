@@ -1,79 +1,70 @@
 <template>
-  <div>
-    <v-img
-      class="mx-auto my-8"
-      max-width="228"
-      src="https://cdn.vuetifyjs.com/docs/images/logos/vuetify-logo-v3-slim-text-light.svg"
-    ></v-img>
+  <div class="pt-10 gradient-bg-animation" >
+    
     <v-card
-      class="mx-auto pa-12 pb-8 mb-9"
+      class="mx-auto  pa-12 pb-8 mb-9"
       elevation="8"
       max-width="500"
       rounded="lg"
     >
-      <v-form validate-on="submit lazy" @submit.prevent="submit" max-width="500">
-        <div class="text-subtitle-1 text-medium-emphasis">Account</div>
-        <v-text-field
-          v-model="mail"
-          placeholder="Email Adress"
-          :rules="mailRules"
-          density="compact"
-          variant="outlined"
-          prepend-inner-icon="mdi-email-outline"
-        ></v-text-field>
+      <v-img
+          class="mx-auto my-8"
+          max-width="228"
+          src="https://cdn.vuetifyjs.com/docs/images/logos/vuetify-logo-v3-slim-text-light.svg"
+      ></v-img>
+     <v-form @submit.prevent="submit" ref="loginForm">
+      
+      <v-text-field
+        v-model="userOrEmail"
+        :rules="nameRules"
+        label="E-mail"
+        variant="outlined"
+        density="compact"
+      >
+      </v-text-field>
+      <v-text-field
+        v-model="password"
+        :append-inner-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+        @click:append-inner="showPass = !showPass"
+        :type="showPass ? 'text' : 'password'"
+        hint="password will be at least 6 characters"
+        :rules="pwRules"
+        label="Password"
+        variant="outlined"
+        density="compact"
+      >
+      </v-text-field>
 
-        <div
-          class="text-subtitle-1 text-medium-emphasis d-flex aling-center justify-space-between"
-        >
-          Password
-          <a
-            class="text-caption text-decoration-none text-blue"
-            href="#"
-            rel="noopener noreferrer"
-            target="_blank"
-            >Forgot your password?</a
-          >
-        </div>
-        <v-text-field
-          v-model="password"
-          :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-          :type="visible ? 'text' : 'password'"
-          density="compact"
-          placeholder="Enter your password"
-          prepend-inner-icon="mdi-lock-outline"
-          variant="outlined"
-          @click:append-inner="visible = !visible"
-          :rules="passwordRules"
-        ></v-text-field>
+
+      <v-checkbox
+         v-model="rememberMe"
+         label="Remember me"
+         color="primary"
+         class="ml-3"
+      ></v-checkbox>
+
+      <div class="text-center">
+
+        <v-btn
+        density="compact"
+        size="large"
+        variant="tonal"
+        color="blue"
+        :loading="loading"
+        type="submit"
+        class="mb-3 text-center text-none"
         
-        <v-checkbox  
-        class="pl-1"  
-        label="Remember me" 
-        v-model="rememberMe" 
-        base-color="blue"
        > 
-       </v-checkbox>
-
-       
-
-        <div class="text-center">
-          <v-btn
-            density="compact"
-            size="large"
-            variant="tonal"
-            color="blue"
-            :loading="loading"
-            type="submit"
-            class="mb-3"
-            >Log In</v-btn
-          >
-        </div>
+          Login
+      </v-btn>
+      </div>
+    
         <p class="text-subtitle-1 text-medium-emphasis text-center">or</p>
         <v-card class="text-center mt-2" elevation="0">
           <router-link
             to="/register"
             class="text-decoration-none text-blue text-center"
-            >Sing Up</router-link
+            >SignUp</router-link
           >
         </v-card>
       </v-form>
@@ -82,79 +73,76 @@
 </template>
 
 <script setup>
+import '../gradientAnimationStyles.css'
 import { useUserStore } from "@/stores/user";
 import { ref } from "vue";
 
 const loading = ref(false);
-const mailRules = [value => checkMail(value)];
-const passwordRules = [value => checkPassword(value)];
-const mail = ref(localStorage.getItem('rememberMeEmail' || ''));
-const password = ref(localStorage.getItem('rememberMePassword' || ''));
+const loginForm = ref(true)
+
+const userOrEmail = ref(localStorage.getItem('rememberMeEmail' || ''))
+const password = ref('');
+const showPass = ref(false)
+
 const rememberMe = ref(document.cookie.includes('rememberMe=true'));
+
+const nameRules = [(value) => !!value || 'Required.',
+                   (value) => (/^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/.test(value)) || 'e-mail must be valid'
+  ];
+const pwRules =   [(value) => !!value || 'Required.',
+                   (value) => (value.length >= 6)|| 'password must be al least 6'];
+
 const visible = ref(false)
 let timeout = -1;
 
 
     
-async function submit (event) {
-      loading.value = true;
-      const userStore = await useUserStore();
-      console.log(rememberMe.value)
-      const error = await userStore.loginUser(mail.value, password.value,rememberMe.value); // se usa para manejar los errores de autenticacion del user
-      if (!error) {
-        return; // no hace nada, en este caso no hubo problema con el metodo login, por lo que termina la funcion aca
-      }
+const submit = async () => {
+    loading.value = true
+    const {valid, errors} = await loginForm.value.validate()
+    if(valid) {
+        const userStore = await useUserStore();
+        const error = await userStore.loginUser(userOrEmail.value, password.value,rememberMe.value); // se usa para manejar los errores de autenticacion del user
+            if (!error) {
+                  return; // no hace nada, en este caso no hubo problema con el metodo login, por lo que termina la funcion aca
+                }
 
-      switch (
-        error // contempla los distintos errores que tira firebase por parte de la auth, dependendiendo el error voy a notificar a la UI del mismo
-      ) {
-        case "auth/invalid-credential":
-          console.log("Invalid Credentials");
-          // reseteo el form si hay un error
-          password.value =  "";
-          break;
-        case "auth/invalid-email":
-          console.log("Invalid Email");
-          break;  
-        case "auth/missing-password":
-          console.log("auth/missing-password");
-          break;
-        default:
-          console.log(
-            "Something unexpected happened, please try again later..."
-          );
-         // reseteo el form si hay un error
-          password.value =  "";
-          break;
-      }
-      loading.value = false;
+                switch (
+                  error // contempla los distintos errores que tira firebase por parte de la auth, dependendiendo el error voy a notificar a la UI del mismo
+                ) {
+                  case "auth/invalid-credential":
+                    console.log("Invalid Credentials");
+                    // reseteo el form si hay un error
+                    password.value =  "";
+                    break;
+                  case "auth/invalid-email":
+                    console.log("Invalid Email");
+                    break; 
+                  case "auth/weak-password":
+                    password.value =  "";
+                    console.log("Invalid password");
+                    break
+                  case "auth/missing-password":
+                    console.log("auth/missing-password");
+                    break;
+                  case "auth/missing-email":
+                    console.log("missing-email");
+                    break;   
+                  default:
+                    console.log(
+                      "Something unexpected happened, please try again later..."
+                    );
+                  // reseteo el form si hay un error
+                    password.value =  "";
+                    break;
+                }
+              
     }
-
-async function checkMail(value) {
-      return new Promise((resolve) => {
-        clearTimeout(timeout);
-
-        timeout = setTimeout(() => {
-          if (!value) return resolve("Please enter an email.");
-          if (!/^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/.test(value))
-            return resolve("This is not a valid email. Please try again");
-
-          return resolve(true);
-        }, 1000);
-      });
-}
-
-async function checkPassword(value) {
-      return new Promise((resolve) => {
-        clearTimeout(timeout);
-
-        timeout = setTimeout(() => {
-          if (!value) 
-            return resolve("Please enter a password.");
-          return resolve(true);
-        },1);
-      });
-}
+    loading.value = false
+  }
 </script>
 
 
+<style>
+
+</style>
