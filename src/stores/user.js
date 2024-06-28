@@ -5,6 +5,9 @@ import {
     signOut,
     sendPasswordResetEmail,
     updateEmail,
+    sendEmailVerification,
+    reauthenticateWithCredential,
+    
 } from "firebase/auth";
 import { auth, db } from "@/firebase/firebaseConfig";
 import router from "@/router/router";
@@ -99,7 +102,7 @@ export const useUserStore = defineStore("userStore", {
             }
         },
 
-
+        
 
         async logoutUser() {
             const databaseStore = useDatabaseStore();
@@ -113,6 +116,29 @@ export const useUserStore = defineStore("userStore", {
             }
         },
 
+        async updateAlias(userID, name){
+            try {          
+              const docRef = doc(db,"users", userID);  // Hago referencia al doc de DOCID
+              const docSnap = await getDoc(docRef);  // Me traigo el documento
+              if(!docSnap.exists()){                // si no existe
+                throw new Error("no existe ese documento")
+              }
+              if(docSnap.data().user !== auth.currentUser.uid){ // si el user del documento (uid) no es la del usuario actual o auntenticado
+                throw new Error("ese documento no le pertenece")
+              }
+              await updateDoc(docRef, { // update del doc
+                displayName: name
+              })
+  
+              
+            } catch (error) {
+              console.log(error.message)
+            }
+            finally{
+              this.addingOrDeleteDoc = false
+  
+            }
+         },
 
         async resetPassword() {
             try {
@@ -124,21 +150,59 @@ export const useUserStore = defineStore("userStore", {
         },
 
 
-        async changeEmail(newEmail) {
-            try {
-                if (auth.currentUser) { // Verifica si el usuario está autenticado
-                    const userRef = doc(db, 'users', auth.currentUser.uid); // Utiliza el UID del usuario actual
-                    await updateDoc(userRef, { email: newEmail });
-                    await updateEmail(auth.currentUser, newEmail); // Actualiza el correo electrónico en la autenticación
-                    console.log('Correo electrónico actualizado correctamente.');
-                } else {
-                    // Maneja el caso en el que el usuario no está autenticado
-                    console.error("El usuario no está autenticado.");
-                }
-            } catch (error) {
-                console.error(error.code);
+    // Función para cambiar el correo electrónico del usuario
+        async  changeEmail(newEmail) {
+        this.loadingUser = true; // Indica que se está procesando la solicitud
+
+         try {
+            // Verifica si el usuario está autenticado
+            if (auth.currentUser) {
+                const credential = promptForCredentials();
+                await reauthenticateWithCredential(user, credential).then(() => {
+                    // User re-authenticated.
+                  }).catch((error) => {
+                    // An error ocurred
+                    // ...
+                  });
+
+                // Envía un correo electrónico de verificación al nuevo correo electrónico
+                await sendEmailVerification(auth.currentUser)
+                .then(() => {
+                  // Email verification sent!
+                  // ...
+                });
+                console.log("Correo electrónico de verificación enviado correctamente.");
+
+                // Actualiza el correo electrónico en Firebase Authentication
+                await updateEmail(auth.currentUser,newEmail).then(() => {
+                    // Email updated!
+                    // ...
+                  }).catch((error) => {
+                    // An error occurred
+                    // ...
+                  });
+                  
+
+                // Actualiza la información del usuario en Firestore (opcional)
+                const userDocRef = doc(db, "users", auth.currentUser.uid);
+                await updateDoc(userDocRef, {
+                    email: newEmail,
+                    // Otros campos que deseas actualizar
+                });
+                console.log("Información del usuario actualizada en Firestore.");
+
+            } else {
+                console.error("El usuario no está autenticado.");
+                // Maneja el error, por ejemplo, mostrando un mensaje de error al usuario
             }
-        },
+         } 
+         catch (error) {
+                console.error("Error al cambiar el correo electrónico:", error);
+        // Maneja el error, por ejemplo, mostrando un mensaje de error al usuario
+         } finally {
+             this.loadingUser = false;
+        }
+}
   }
     
 });

@@ -1,5 +1,16 @@
 <template>
   <div>
+    <v-overlay v-model="showEditOverlay" class="d-flex align-center justify-center">
+      <v-card style="width: 400px;" class="v-card">
+        <v-card-title class="card__title text-h4 mb-2" >Alias</v-card-title>
+        <v-card-text>
+          <v-text-field clearable color="primary" v-model="editedAlias" variant="outlined" label="Username" prepend-inner-icon="mdi-account" :loading="loading" :rules="aliasRules"></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" variant="flat" density="compact" type="submit">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-overlay>
     <v-container class="ml-0 pl-0">
       <v-fade-transition>
           <v-alert
@@ -64,8 +75,11 @@
                 :ripple="false"
                 :class="{ 'on-hover': isHovering, 'blue-border': isHovering }"
                 color="blue-lighten-5"
-              >
-                <p class="text-h5">{{ userStore.userData?.email.split("@")[0] }}</p>
+                @click="showEditOverlay = !showEditOverlay"
+              >  
+                <p v-if="!userStore.userData?.phoneNumber" class="text-h5">{{ userStore.userData?.email.split("@")[0] }}</p>
+                <p v-else class="text-h5">{{ userStore.userData.displayName }}</p>
+
                 <v-fade-transition>
                   <v-btn
                     v-if="isHovering"
@@ -100,22 +114,20 @@
             </template>  
             <h4 class="text-grey-lighten-4 overlay text-center">E-mail: {{userStore.userData?.email}} </h4>
   
-            <div v-show="showCard">
               <v-fade-transition>
-                <v-card v-show="showCard" class="mx-auto rounded py-6" color="white" style="width: auto;" border="lg opacity-100" elevation="5">
-                    <v-form class="px-2"  @submit.prevent="submit" ref="emailUpdateForm">
-                        <v-text-field label="email" variant="outlined"  density="compact" placeholder="example@gmail.com" :rules="emailRules" v-model="email"
-                        >
-                           
-                        </v-text-field>
-                    </v-form>
-                   <div class="d-flex justify-end">
-                    <v-btn class="mr-2" color="red" density="compact" @click="toggleCard()">Cancel</v-btn>
-                    <v-btn class="mr-2" color="primary" density="compact" :loading="loading" type="submit" @click="submit">Submit</v-btn>
-                   </div>
-                </v-card>
+                  <EmailCard v-show="showCard">
+                    <template #cancelCard>
+                      <v-btn
+                      class="mr-2"
+                      color="red"
+                      density="compact"
+                      @click="toggleCard()"
+                      >Cancel</v-btn
+                    >
+                    </template>
+                </EmailCard>
               </v-fade-transition>
-            </div>
+  
       </HoverSettings>
        
       <HoverSettings  class="mb-4" >
@@ -127,7 +139,7 @@
         <template v-slot:default>
           <h4 class="text-grey-lighten-4 text-center overlay">Password: ****** </h4>
         </template>
-      </HoverSettings  class="mb-4">
+      </HoverSettings >
       <HoverSettings>
         <template v-slot:updateBtn>
           <v-btn icon  color="transparent" elevation="0" class="ml-4">
@@ -155,9 +167,10 @@
 import { useUserStore } from "@/stores/user";
 import { useDatabaseStore } from "@/stores/database";
 import HoverSettings from "@/components/HoverSettings.vue";
-const userStore = useUserStore();
+const userStore = useUserStore();8
 import {ref} from "vue"
 import { getStorage, uploadBytes, getDownloadURL } from "firebase/storage";
+import EmailCard from "@/components/EmailCard.vue"
 
 
 
@@ -190,10 +203,9 @@ const handleImageChange = () => {
     }
   };
 };
+const showEditOverlay = ref(false);
 
 const showCard = ref(false);
-const dynamicHeight = ref('auto');
-const card = ref(null);
 
 const toggleCard = () => {
       showCard.value = !showCard.value;
@@ -219,41 +231,7 @@ const resetPassword = async () => {
   }
 };
 
-const updateEmail  = async () => {
-  try {
-    alertActivated.value = true;
-    await userStore.changeEmail(email.value);
-    // Oculta la alerta después de 3 segundos
-  } catch (error) {
-    console.error( error);
-  }
-  finally{
-    setTimeout(() => {
-      alertActivated.value = false;
-    }, 10000);
-  }
-}
 
-const loading = ref(false);
-const emailUpdateForm = ref(true);
-const email = ref('')
-const emailRules = [(value) => !!value || 'Required.',
-                   (value) => (/^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/.test(value)) || 'e-mail must be valid'
-  ];
-
-const submit = async () => {
-  loading.value = true
-  const {valid, errors} = await emailUpdateForm.value.validate()
-  if(valid) {
-      const error = await updateEmail()
-      if (!error) {
-                  return; // no hace nada, en este caso no hubo problema con el metodo login, por lo que termina la funcion aca
-                }
-      console.log(error.code)       
-  }
-  loading.value = false
-  
-};
 
 </script>
 
@@ -294,11 +272,15 @@ const submit = async () => {
   height: 500px;
 }
 
-.v-fade-enter-active, .v-fade-leave-active {
-  transition: opacity 10s; /* Ajusta la duración de la transición fade a 1 segundo */
+.v-card__title{
+  font-family: Poppins;
+  font-size: 32px !important;
+  font-weight: 500 !important;
+  line-height: 48px !important;
+  text-align: left;
+  color: #3a3a3a !important;
 }
-
-.v-fade-enter, .v-fade-leave-to {
-  opacity: 0;
+.v-card{
+  border-color: white !important;
 }
 </style>
