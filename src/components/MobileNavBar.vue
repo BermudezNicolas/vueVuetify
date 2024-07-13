@@ -33,7 +33,7 @@
 
     <v-navigation-drawer v-model="drawer" :location="'left'" temporary class="w-auto" theme="dark"  :style="{background: 'linear-gradient(to top right, rgba(19,84,122,1), rgba(128,208,199,1)'}" >
         <v-list>
-          <v-list-item :title="userStore.userData.email.split('@')[0]" :prepend-avatar="userStore.userData.photoUrl" class="color"
+          <v-list-item :title="userStore.userData.displayName" :prepend-avatar="userStore.userData.photoUrl" class="color"
           :subtitle="userStore.userData.email"></v-list-item>
         </v-list>
         <v-divider :thickness="3" color="white" style="opacity: .9;"></v-divider>

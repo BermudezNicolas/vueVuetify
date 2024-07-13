@@ -35,6 +35,26 @@ export const useDatabaseStore = defineStore('databaseStore', {
           }
         },
 
+
+        async changePhone(phoneNumber) {
+          try {
+
+            // Actualizar el campo photoUrl del documento de usuario en Firestore
+            const userDocRef = doc(db, 'users', auth.currentUser.uid);
+            await updateDoc(userDocRef, {
+              phoneNumber: phoneNumber
+            });
+            const userSotore = useUserStore()
+            // Actualizar el store local con la nueva URL de la foto
+            userSotore.userData.phoneNumber = phoneNumber;
+
+          } catch (error) {
+            console.log(error.code);
+          }
+        },
+        
+        
+
         async getUrls () {
             try {
                 if(this.documents.length !== 0){

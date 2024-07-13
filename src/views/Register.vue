@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pt-10">
     <v-card
       class="mx-auto  pa-12 pb-8 mb-9"
       elevation="8"
@@ -19,6 +19,7 @@
         label="E-mail"
         variant="outlined"
         density="compact"
+        class="my-3"
       >
       </v-text-field>
       <v-text-field
@@ -31,6 +32,8 @@
         label="Password"
         variant="outlined"
         density="compact"
+        class="my-3"
+
       >
       </v-text-field>
 

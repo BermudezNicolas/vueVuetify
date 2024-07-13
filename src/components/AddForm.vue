@@ -5,10 +5,9 @@
         prepend-inner-icon="$treeviewExpand"
         clearable
         variant="solo-inverted"
-        label="Enter an URL:"
+        label="Enter a URL:"
         v-model="url"
         :rules="urlRules"
-        theme="dark"
         
       ></v-text-field>
       <div class="text-center">

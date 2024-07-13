@@ -11,11 +11,11 @@
         <v-expansion-panel
           class="border-t-sm border-white border-opacity-100"
           elevation="8"
-          bg-color="indigo-lighten-2"
+          style="background-color:#3451ea;"
         >
           <v-expansion-panel-title expand-icon="mdi-menu-down">
             <v-col cols="auto">
-              <p class="url-text">{{ doc.name }}</p>
+              <p class="url-text text-white">{{ doc.name }}</p>
             </v-col>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
@@ -23,10 +23,10 @@
               <v-col cols="auto">
                 <p class="text-white text-h5 text-start">Id</p>
               </v-col>
-              <v-col cols="1">
+              <v-col cols="1" class="text-white">
                 <v-divider class="border-opacity-100"></v-divider>
               </v-col>
-              <v-col>
+              <v-col class="text-white">
                 {{ doc.id }}
               </v-col>
             </v-row>
@@ -34,10 +34,10 @@
               <v-col cols="auto">
                 <p class="text-white text-h5 text-start">Short</p>
               </v-col>
-              <v-col cols="1">
+              <v-col cols="1" class="text-white">
                 <v-divider class="border-opacity-100"></v-divider>
               </v-col>
-              <v-col>
+              <v-col class="text-white">
                 {{ doc.short }}
               </v-col>
             </v-row>
@@ -45,7 +45,7 @@
               <v-col class="d-flex justify-end">
                 <v-btn
                   color="error"
-                  variant="outlined"
+                  variant="flat"
                   border="opacity-border-100"
                   density="compact"
                   class="mr-2"
@@ -53,7 +53,7 @@
                   >Delete</v-btn
                 >
                 <v-btn
-                  color="primary"
+                  color="white"
                   variant="flat"
                   density="compact"
                   @click="router.push(`/edit/${doc.id}`)"

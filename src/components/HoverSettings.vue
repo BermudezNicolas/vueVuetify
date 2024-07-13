@@ -3,7 +3,7 @@
       <v-hover v-slot="{ isHovering, props }"  close-delay="100">
         <v-card class="mx-auto border-thin border-opacity-100" v-bind="props" theme="dark" :class="{enlarge : isHovering, normal: !isHovering}">
           <v-fade-transition >
-            <div v-if="isHovering" class="d-flex justify-center bg-primary v-card--reveal text-h4 pb-1" style="opacity: 1; height:100%">
+            <div v-if="isHovering" class="d-flex justify-center v-card--reveal text-h4 pb-1" style="opacity: 1; height:100; background-color:#3451ea;">
               <slot name="updateBtn">
                  
               </slot>
